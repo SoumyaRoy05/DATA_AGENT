@@ -1,0 +1,25 @@
+[project]
+name = "data-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Soumyabrata Roy", email = "soumya11roy@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "dotenv>=0.9.9",
+    "langchain>=1.3.17",
+    "langchain-google-genai>=4.3.5",
+    "langchain-nvidia-ai-endpoints>=1.4.3",
+    "langchain-ollama>=1.1.0",
+    "langgraph>=1.2.11",
+    "pydantic>=2.13.4",
+]
+
+[project.scripts]
+data-agent = "data_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
