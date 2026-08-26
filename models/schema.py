@@ -3,9 +3,10 @@ from typing import Annotated, Literal
 from operator import add
 
 
-# Schema for the agent's state
-class AgentState(BaseModel):
+# Schema for the agent's schema
+class AgentSchema(BaseModel):
     messages : Annotated[list,add] = Field(..., description="List of messages to be processed by the agent.")
+    user_question : str = Field(..., description="The user's question that needs to be answered by the agent.")
     curated_prompt : str = Field(..., description="The curated user prompt.")
     prompt_query_context : str = Field(..., description="A detailed prompt with SQL DB context that will help agent to generate SQL query.")
     is_safe : Literal["Yes","No"] = Field(..., description="A boolean indicating if the agent is safe to use.")

@@ -14,6 +14,7 @@ dependencies = [
     "langchain-nvidia-ai-endpoints>=1.4.3",
     "langchain-ollama>=1.1.0",
     "langgraph>=1.2.11",
+    "psycopg2>=2.9.12",
     "pydantic>=2.13.4",
 ]
 
