@@ -13,11 +13,11 @@ load_dotenv()
 # ------------------------------------------------------------------------
 
 db_config = {
-    "host": os.getenv("host"),
-    "port": int(os.getenv("port", "5432")),  # Default PostgreSQL port is 5432
-    "database": os.getenv("database"),
-    "user": os.getenv("user", "postgres"),
-    "password": os.getenv("password")
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": int(os.getenv("DB_PORT", "5432")),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD"),
+    "dbname": os.getenv("DB_NAME", "DATA_AGENT")
 }
 
 CSV_DIR = "data"  # Directory where CSV files are stored
