@@ -35,6 +35,9 @@ def pick_llm(level: str):
     return llm
 
 
-llm_obj = pick_llm("high")  # Change the level as needed: "high", "medium", or "low"
-response=llm_obj.invoke("What is the capital of France?")  # Example usage of the picked LLM
-print(response.content)  # Print the response from the LLM
+# Note: Module-level code removed to prevent connection errors during import
+# Uncomment below to test LLM locally
+# if __name__ == "__main__":
+#     llm_obj = pick_llm("high")  # Change the level as needed: "high", "medium", or "low"
+#     response=llm_obj.invoke("What is the capital of France?")  # Example usage of the picked LLM
+#     print(response.content)  # Print the response from the LLM

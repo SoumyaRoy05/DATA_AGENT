@@ -7,35 +7,39 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+if 'port' not in os.environ:
+    os.environ['port'] = '5432'
 
-# ------------------------------------------------------------------------
-# DATABASE CONFIGURATION
-# ------------------------------------------------------------------------
+# ============================================================
+# CONFIGURATION
+# ============================================================
 
-db_config = {
+DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
     "port": int(os.getenv("DB_PORT", "5432")),
     "user": os.getenv("DB_USER", "postgres"),
     "password": os.getenv("DB_PASSWORD"),
-    "dbname": os.getenv("DB_NAME", "DATA_AGENT")
+    "dbname": os.getenv("DB_NAME", "data_agent").lower()
 }
 
-CSV_DIR = "data"  # Directory where CSV files are stored
+CSV_DIR = "data"
 
-# ------------------------------------------------------------------------
+
+# ============================================================
 # DATABASE CONNECTION
-# ------------------------------------------------------------------------
+# ============================================================
 
-conn = psycopg2.connect(**db_config)
-conn.autocommit = False  # Enable autocommit mode
+conn = psycopg2.connect(**DB_CONFIG)
+conn.autocommit = False
 
 cursor = conn.cursor()
 
 print("Connected to PostgreSQL")
 
-# ------------------------------------------------------------------------
-# FUNCTION TO CREATE TABLES
-# ------------------------------------------------------------------------
+
+# ============================================================
+# CREATE TABLES
+# ============================================================
 
 create_tables_sql = """
 

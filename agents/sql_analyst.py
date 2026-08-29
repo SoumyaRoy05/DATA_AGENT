@@ -23,7 +23,7 @@ def curated_prompt(state: AgentSchema) -> AgentSchema:
 
     user_question = state.user_question #Bcz this is a Pydantic model
 
-    llm = pick_llm("low")  # Pick the appropriate LLM based on the desired level
+    llm = pick_llm("medium")  # Pick the appropriate LLM based on the desired level
 
     response = str(llm.invoke(f"Curate the user question: '{user_question}' into a more detailed and specific prompt for SQL query generation.").content)
 
@@ -42,7 +42,7 @@ def prompt_query_context(state: AgentSchema) -> AgentSchema:
         "port": int(os.getenv("DB_PORT", "5432")),
         "user": os.getenv("DB_USER"),
         "password": os.getenv("DB_PASSWORD"),
-        "dbname": os.getenv("DB_NAME")
+        "dbname": os.getenv("DB_NAME", "data_agent").lower()
     }
 
     obj = Database(conn_details)  # Create a Database object with the connection details
@@ -80,7 +80,7 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
 
     prompt = state.prompt_query_context  # Get the prompt query context from the state
 
-    llm = pick_llm("medium")  # Pick the appropriate LLM based on the desired level
+    llm = pick_llm("high")  # Pick the appropriate LLM based on the desired level
     generated_sql_query = str(llm.invoke(prompt).content)  # Generate the SQL query using the LLM
 
     state.generated_sql_query = generated_sql_query  # Update the generated SQL query in the state
@@ -93,7 +93,7 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
 def is_safe(state: AgentSchema) -> AgentSchema:
 
     sql_query = state.generated_sql_query  # Get the generated SQL query from the state
-    llm = pick_llm("medium")  # Pick the appropriate LLM based on the desired level
+    llm = pick_llm("high")  # Pick the appropriate LLM based on the desired level
     llm_judge = llm.with_structured_output(JudgeSchema)  # Use the same LLM for judging with structured output
 
     prompt = f"""
@@ -141,7 +141,7 @@ def execute_sql(state: AgentSchema) -> AgentSchema:
         "port": int(os.getenv("DB_PORT", "5432")),
         "user": os.getenv("DB_USER"),
         "password": os.getenv("DB_PASSWORD"),
-        "dbname": os.getenv("DB_NAME")
+        "dbname": os.getenv("DB_NAME", "data_agent").lower()
     }
 
     obj = Database(conn_details)  # Create a Database object with the connection details
@@ -182,3 +182,87 @@ def represent_final_answer(state: AgentSchema) -> AgentSchema:
 
 
 # ----------------------------------------------------------------- Graph Construction -----------------------------------------------------------------
+
+sql_agent_graph = StateGraph(AgentSchema)  # Create a StateGraph object with the AgentSchema
+
+# Nodes in the graph
+sql_agent_graph.add_node("curated_prompt", curated_prompt)  # Node to curate the user question
+sql_agent_graph.add_node("prompt_query_context", prompt_query_context)  # Node to generate the prompt query context
+sql_agent_graph.add_node("generate_sql", generate_sql)  # Node to generate the SQL query
+sql_agent_graph.add_node("is_safe", is_safe)  # Node to check if the SQL query is safe
+sql_agent_graph.add_node("cancelled_sql", cancelled_sql)  # Node to handle cancelled SQL sql_query_execution_result
+sql_agent_graph.add_node("execute_sql", execute_sql)  # Node to execute the SQL query
+sql_agent_graph.add_node("represent_final_answer", represent_final_answer)  # Node to represent the final answer
+
+# Edges in the graph
+sql_agent_graph.add_edge(START, "curated_prompt")  # Edge from START to curated_prompt
+sql_agent_graph.add_edge("curated_prompt", "prompt_query_context")  # Edge from curated_prompt to prompt_query_context
+sql_agent_graph.add_edge("prompt_query_context", "generate_sql")  # Edge from prompt_query_context to generate_sql
+sql_agent_graph.add_edge("generate_sql", "is_safe")  # Edge from generate_sql to is_safe
+
+# Conditional edge function
+def is_safe_edge(state: AgentSchema) -> str:
+    is_safe = state.is_safe  # Get the safety status from the state
+
+    if is_safe == "Yes":
+        return "execute_sql"
+    else:
+        return "cancelled_sql"
+
+# Add conditional edges based on the safety status
+sql_agent_graph.add_conditional_edges("is_safe", is_safe_edge,
+                                      {
+                                          "execute_sql": "execute_sql",
+                                          "cancelled_sql": "cancelled_sql"
+                                      })  # Add conditional edges based on the safety status
+
+sql_agent_graph.add_edge("cancelled_sql", END)  # Edge from cancelled_sql to represent_final_answer
+sql_agent_graph.add_edge("execute_sql", "represent_final_answer")  # Edge from execute_sql to represent_final_answer
+sql_agent_graph.add_edge("represent_final_answer", END)  # Edge from represent_final_answer to END
+
+
+if __name__ == "__main__":
+    # Graph Compilation
+    sql_analyst = sql_agent_graph.compile()  # Compile the graph to finalize its structure and prepare it for execution
+
+    # # Generate a visual representation of the graph in Mermaid format
+    # img = sql_analyst.get_graph().draw_mermaid_png()  # Generate a visual representation of the graph in PNG format
+    # with open("sql_analyst_graph.png", "wb") as f:
+    #     f.write(img)  # Save the graph image to a file
+
+    input_schema = AgentSchema(
+        messages=[],
+        user_question="What are the different types of Payment Methods available in the system?",
+        curated_prompt="",
+        prompt_query_context="",
+        generated_sql_query="",
+        is_safe="No",
+        comments="",
+        sql_query_execution_result="",
+        final_answer=""
+    )
+
+    # Execute the graph with the provided input schema
+    try:
+        sql_analyst_response = sql_analyst.invoke(input_schema)  # Execute the graph with the provided input schema
+
+        print(sql_analyst_response['messages'])  # Print the messages generated during the execution of the graph
+
+        print("****************************************************************************")
+
+        print(sql_analyst_response['generated_sql_query'])  # Print the generated SQL query
+
+        print("****************************************************************************")
+
+        print(sql_analyst_response['sql_query_execution_result'])  # Print the result of executing the SQL query
+
+        print("****************************************************************************")
+
+        print(sql_analyst_response['prompt_query_context'])  # Print the prompt query context used for generating the SQL query
+
+        print("****************************************************************************")
+
+        print(sql_analyst_response['final_answer'])  # Print the final answer generated by the agent based on the SQL query execution result
+    except Exception as e:
+        print(f"Error during graph execution: {str(e)}")
+        print(f"Error type: {type(e).__name__}")

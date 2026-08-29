@@ -20,3 +20,6 @@ class JudgeSchema(BaseModel):
     answer : Literal["Yes","No"] = Field(..., description="Indicates whether the sql query is safe to execute or not.")
     comment : str = Field(..., description="Additional comments or feedback regarding the SQL query.")
 
+
+class ETLAgentSchema(BaseModel):
+    messages : Annotated[list,add] = Field(..., description="List of messages to be processed by the ETL agent.")
