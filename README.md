@@ -1,4 +1,4 @@
-# RAG Guide
+# End-to-End Data Agentic System
 ## LLMs Used:
 High Level --> Gemini 3.6 flash  
 Through API Key made from https://aistudio.google.com/api-keys  
