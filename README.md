@@ -23,10 +23,13 @@ Not added to GitHub for security reasons. Please create your own vector folder a
   It also contains functions for creating the necessary tables in the database if they don't already exist.  
 
 - data_agent_graph.py: Image of the Data Agent Graph made after compilation of the configured graph from respective nodes and edges.  
+  D:\Codes\DATA_AGENT\data_agent_graph.png
   
 - sql_analyst_graph.py: Image of the SQL Analyst Graph made after compilation of the configured graph from respective nodes and edges.  
+  D:\Codes\DATA_AGENT\sql_analyst_graph.png
   
 - etl_analyst_graph.py: Image of the ETL Analyst Graph made after compilation of the configured graph from respective nodes and edges.  
+  D:\Codes\DATA_AGENT\etl_analyst_graph.png
   
 # Agents:
 The Agents folder contains the implementation of the different agents used in the End-to-End Agentic System. Each agent is responsible for handling specific tasks related to the user's question and the database. The agents use LLMs to analyze the user's question and generate appropriate responses or actions.  
