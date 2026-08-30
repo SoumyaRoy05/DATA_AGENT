@@ -220,10 +220,10 @@ sql_agent_graph.add_edge("cancelled_sql", END)  # Edge from cancelled_sql to rep
 sql_agent_graph.add_edge("execute_sql", "represent_final_answer")  # Edge from execute_sql to represent_final_answer
 sql_agent_graph.add_edge("represent_final_answer", END)  # Edge from represent_final_answer to END
 
+# Graph Compilation
+sql_analyst = sql_agent_graph.compile()  # Compile the graph to finalize its structure and prepare it for execution
 
 if __name__ == "__main__":
-    # Graph Compilation
-    sql_analyst = sql_agent_graph.compile()  # Compile the graph to finalize its structure and prepare it for execution
 
     # # Generate a visual representation of the graph in Mermaid format
     # img = sql_analyst.get_graph().draw_mermaid_png()  # Generate a visual representation of the graph in PNG format
