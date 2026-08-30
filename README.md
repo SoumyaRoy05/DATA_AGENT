@@ -32,10 +32,13 @@ Not added to GitHub for security reasons. Please create your own vector folder a
 The Agents folder contains the implementation of the different agents used in the End-to-End Agentic System. Each agent is responsible for handling specific tasks related to the user's question and the database. The agents use LLMs to analyze the user's question and generate appropriate responses or actions.  
   
 - agents/Data_Agent.py: This agent is responsible for routing the user's question to the appropriate agent (SQL Analyst or ETL Analyst) based on the context of the question and the database. It uses the LLMs to analyze the user's question and generate a response indicating which agent should handle the question.  
-  
+  ![alt text](data_agent_graph.png)  
+
 - agents/sql_analyst.py: This agent is responsible for analyzing the user's question, generating a SQL query, and executing it against the database. It uses the LLMs to curate the user's question into a more detailed prompt, generate the SQL query, and judge the safety of the generated SQL query.  
-  
+  ![alt text](sql_analyst_graph.png)  
+
 - agents/etl_analyst.py: This agent is responsible for processing messages related to ETL (Extract, Transform, Load) operations. It uses the LLMs to analyze the messages and generate appropriate responses or actions.
+  ![alt text](etl_analyst_graph.png)  
   
 # Utils:
 The Utils folder contains utility functions that are used by the agents to perform various tasks, such as interacting with the database, picking an LLM based on the user's question, and performing agentic operations.  
