@@ -1,4 +1,6 @@
 # End-to-End Data Agentic System
+An Agentic Data Agent containing multiple agents for Updating SQL Queries and update files in any database of our choice. The System finds out the best agent to use from the given prompt of user and uses the respective tools to work out the solution.  
+  
 ## LLMs Used:
 High Level --> Gemini 3.6 flash  
 Through API Key made from https://aistudio.google.com/api-keys  
