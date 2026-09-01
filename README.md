@@ -1,6 +1,21 @@
 # End-to-End Data Agentic System
-An Agentic Data Agent containing multiple agents for Updating SQL Queries and update files in any database of our choice. The System finds out the best agent to use from the given prompt of user and uses the respective tools to work out the solution.  
-  
+An Agentic Data Agent containing multiple agents for Updating SQL Queries and extracting/transforming files in any database of our choice. The System finds out the best agent to use from the given prompt of user and uses the respective tools to work out the solution. Due to mulitple LLMs (two use APIs and one local), hybrid searching is done using hybrid fusion (through Dense Vector and BM25 Lexical) and hybrid reranking using Cross-Encoder. ETL Pipelining is done for handling files. For Database Management, I used PostgreSQL using PGvector as the database engine.  
+
+FLUX - Agentic Data Agent is designed to solve a major operational bottleneck in modern data teams: the constant influx of repetitive, low-leverage data requests from non-technical business stakeholders. Usually, a human data professional has to pause their high-value work (like building core infrastructure or machine learning models) to manually write SQL queries, fetch API payloads, and format data frames in Python. This project completely automates that junior data analyst workflow by building a stateful, multi-agent AI system that acts like an autonomous data team.  
+
+## How the Solution Works in Practice:
+The parent Data Agent acts like a Data Team Lead.  
+When a non-technical user submits a request in messy, layman's English, the system routes and executes it through specific stages:  
+1. The SQL Analyst Agent (For Database Queries)
+- The Problem: Non-technical users cannot write code or formulate perfect prompt contexts, and standard LLMs will generate "garbage" SQL if they don't know your database schema.  
+- The Fix: The agent takes a broken request, automatically extracts the schema context and sample data from your database (e.g., PostgreSQL), safely structures a bulletproof read-only query, executes it, and translates the raw database records back into a conversational, human-readable answer.  
+2. The AI Guardrail Layer (For Data Security)
+- The Problem: Blindly executing LLM-generated code on a production database introduces massive security risks, such as accidental data deletion or unauthorized data overrides (SQL Injection).  
+- The Fix: The project implements AI as a Judge. A separate LLM strictly checks the generated query before it ever touches your server. If it detects unauthorized commands like DELETE or DROP, it blocks execution and explains why.  
+3. The ETL Analyst Agent (For Data Engineering & Processing)
+- The Problem: Databases don't hold all the answers. Sometimes data must be pulled dynamically from third-party vendor platforms or API endpoints.  
+- The Fix: Using a programmatic ReAct tool-calling loop, this sub-agent dynamically selects code-driven tools to hit raw API endpoints, handles raw data parsing into Pandas DataFrames, applies script transformations (like filtering or sorting), and saves the clean file down locally.  
+   
 ## LLMs Used:
 High Level --> Gemini 3.6 flash  
 Through API Key made from https://aistudio.google.com/api-keys  
